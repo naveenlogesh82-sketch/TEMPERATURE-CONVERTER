@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A beautiful, modern temperature converter supporting Celsius, Fahrenheit, and Kelvin conversions with real-time results.">
+    <title>ThermoShift — Temperature Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Animated background particles -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Floating temperature icons -->
+    <div class="floating-icons" aria-hidden="true">
+        <span class="float-icon" style="--delay: 0s; --x: 10%; --dur: 18s;">🌡️</span>
+        <span class="float-icon" style="--delay: 3s; --x: 25%; --dur: 22s;">❄️</span>
+        <span class="float-icon" style="--delay: 6s; --x: 50%; --dur: 16s;">🔥</span>
+        <span class="float-icon" style="--delay: 9s; --x: 70%; --dur: 20s;">🌡️</span>
+        <span class="float-icon" style="--delay: 12s; --x: 85%; --dur: 24s;">❄️</span>
+        <span class="float-icon" style="--delay: 2s; --x: 40%; --dur: 19s;">🔥</span>
+        <span class="float-icon" style="--delay: 7s; --x: 60%; --dur: 21s;">🌡️</span>
+        <span class="float-icon" style="--delay: 4s; --x: 90%; --dur: 17s;">❄️</span>
+    </div>
+
+    <main class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <defs>
+                            <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#06d6a0"/>
+                                <stop offset="100%" style="stop-color:#118ab2"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M16 2C14.5 2 13 3.5 13 5v16.27A5 5 0 1021 24a5 5 0 00-2-3.73V5c0-1.5-1.5-3-3-3z" stroke="url(#logo-grad)" stroke-width="2" fill="none"/>
+                        <circle cx="16" cy="24" r="2.5" fill="url(#logo-grad)"/>
+                        <line x1="19" y1="10" x2="22" y2="10" stroke="url(#logo-grad)" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="19" y1="14" x2="24" y2="14" stroke="url(#logo-grad)" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="19" y1="18" x2="22" y2="18" stroke="url(#logo-grad)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <span class="logo-text">ThermoShift</span>
+            </div>
+            <p class="tagline">Precision temperature conversion</p>
+        </header>
+
+        <!-- Converter Card -->
+        <section class="converter-card" id="converter">
+            <h1 class="card-title">Temperature Converter</h1>
+            <p class="card-subtitle">Enter a value, pick your unit, and convert instantly.</p>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="temp-input" class="input-label">Temperature Value</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="temp-input" 
+                            class="temp-input" 
+                            placeholder="e.g. 100"
+                            autocomplete="off"
+                            inputmode="decimal"
+                        >
+                        <span class="input-unit" id="input-unit-display">°C</span>
+                    </div>
+                    <p class="error-msg" id="error-msg"></p>
+                </div>
+            </div>
+
+            <!-- Unit Selection -->
+            <div class="unit-section">
+                <p class="section-label">Convert From</p>
+                <div class="unit-selector" id="unit-selector">
+                    <button class="unit-btn active" data-unit="C" id="btn-celsius">
+                        <span class="unit-icon">🧊</span>
+                        <span class="unit-name">Celsius</span>
+                        <span class="unit-symbol">°C</span>
+                    </button>
+                    <button class="unit-btn" data-unit="F" id="btn-fahrenheit">
+                        <span class="unit-icon">🌤️</span>
+                        <span class="unit-name">Fahrenheit</span>
+                        <span class="unit-symbol">°F</span>
+                    </button>
+                    <button class="unit-btn" data-unit="K" id="btn-kelvin">
+                        <span class="unit-icon">⚛️</span>
+                        <span class="unit-name">Kelvin</span>
+                        <span class="unit-symbol">K</span>
+                    </button>
+                    <div class="selector-highlight" id="selector-highlight"></div>
+                </div>
+            </div>
+
+            <!-- Convert Button -->
+            <button class="convert-btn" id="convert-btn">
+                <span class="btn-text">Convert</span>
+                <span class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="17 1 21 5 17 9"></polyline>
+                        <path d="M3 11V9a4 4 0 014-4h14"></path>
+                        <polyline points="7 23 3 19 7 15"></polyline>
+                        <path d="M21 13v2a4 4 0 01-4 4H3"></path>
+                    </svg>
+                </span>
+            </button>
+
+            <!-- Results Section -->
+            <div class="results-section" id="results-section">
+                <p class="section-label results-label">Conversion Results</p>
+                <div class="results-grid" id="results-grid">
+                    <!-- Results will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Temperature Scale Visualizer -->
+        <section class="scale-card" id="scale-card">
+            <h2 class="scale-title">Temperature Scale</h2>
+            <div class="scale-bar">
+                <div class="scale-marker" id="scale-marker" style="left: 50%;">
+                    <span class="marker-label" id="marker-label">—</span>
+                </div>
+                <div class="scale-gradient"></div>
+                <div class="scale-labels">
+                    <span>-273°C</span>
+                    <span>0°C</span>
+                    <span>100°C</span>
+                    <span>500°C</span>
+                    <span>1000°C</span>
+                </div>
+            </div>
+            <div class="scale-reference">
+                <div class="ref-item">
+                    <span class="ref-dot" style="background: #60a5fa;"></span>
+                    <span>Absolute Zero: -273.15°C</span>
+                </div>
+                <div class="ref-item">
+                    <span class="ref-dot" style="background: #06d6a0;"></span>
+                    <span>Water Freezes: 0°C</span>
+                </div>
+                <div class="ref-item">
+                    <span class="ref-dot" style="background: #ffd166;"></span>
+                    <span>Body Temp: 37°C</span>
+                </div>
+                <div class="ref-item">
+                    <span class="ref-dot" style="background: #ef476f;"></span>
+                    <span>Water Boils: 100°C</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with precision & style &bull; ThermoShift &copy; 2026</p>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
